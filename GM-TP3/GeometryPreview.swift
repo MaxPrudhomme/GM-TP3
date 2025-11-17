@@ -74,7 +74,7 @@ struct GeometryPreview: NSViewRepresentable {
 
         override func scrollWheel(with event: NSEvent) {
             guard let camera = pointOfView else { return }
-            let zoomFactor: Float = Float(event.scrollingDeltaY) * 0.01
+            let zoomFactor: Float = Float(-event.scrollingDeltaY) * 0.01
             camera.localTranslate(by: SCNVector3(0, 0, zoomFactor))
         }
     }

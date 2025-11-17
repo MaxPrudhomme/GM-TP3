@@ -16,7 +16,6 @@ import SceneKit
 import simd
 
 class Cube: Mesh {
-
     init(size: Float = 1.0) {
         super.init()
         build(size: size)

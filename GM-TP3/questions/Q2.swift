@@ -1,5 +1,5 @@
 //
-//  Q1.swift
+//  Q2.swift
 //  GM-TP3
 //
 //  Created by Max PRUDHOMME on 17/11/2025.
@@ -9,7 +9,7 @@ import simd
 import SwiftUI
 import SceneKit
 
-func Q1(subdivisions: Int) -> SCNNode {
+func Q2(subdivisions: Int) -> SCNNode {
     let sphere = Sphere(radius: 1)
     sphere.center()
     

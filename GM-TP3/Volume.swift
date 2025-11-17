@@ -21,19 +21,43 @@ class Volume {
     }
     
     func render() {
-        for x in 0...subdivisions {
-            for y in 0...subdivisions {
-                for z in 0...subdivisions {
-                    let center = SIMD3<Float>(Float(x) * factor, Float(y) * factor, Float(z) * factor)
+        vertices.removeAll()
+        indices.removeAll()
+        
+        for x in 0..<subdivisions {
+            for y in 0..<subdivisions {
+                for z in 0..<subdivisions {
+                    let center = SIMD3<Float>(
+                        (Float(x) + 0.5) * factor,
+                        (Float(y) + 0.5) * factor,
+                        (Float(z) + 0.5) * factor
+                    )
                     
                     for mesh in meshes {
                         if mesh.intersects(voxel: Voxel(center: center, size: factor)) {
                             addCube(at: center, size: factor)
+                            break
                         }
                     }
                 }
-
             }
+        }
+        
+        guard !vertices.isEmpty else { return }
+        
+        let sum = vertices.reduce(SIMD3<Float>(0, 0, 0)) { $0 + $1 }
+        let centroid = sum / Float(vertices.count)
+        for i in 0..<vertices.count {
+            vertices[i] -= centroid
+        }
+
+        let maxCoord = vertices.reduce(Float(0)) { currentMax, v in
+            let vertexMax = max(abs(v.x), abs(v.y), abs(v.z))
+            return max(currentMax, vertexMax)
+        }
+        let scale: Float = 1.0 / maxCoord
+        for i in 0..<vertices.count {
+            vertices[i] *= scale
         }
     }
     

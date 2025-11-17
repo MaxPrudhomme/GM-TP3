@@ -11,19 +11,19 @@ import Combine
 
 enum Question: String, CaseIterable, Identifiable {
     case q1 = "Q1"
+    case q2 = "Q2"
     var id: String { rawValue }
 }
 
-
 struct ContentView: View {
     @State private var selectedQuestion: Question = .q1
-    @State private var selectedMesh: String = "bunny"
     @State private var showWire: Bool = true
+    @State private var subdivisions: Int = 8
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Controls
-            HStack {
+            HStack(spacing: 16) {
                 Picker("", selection: $selectedQuestion) {
                     ForEach(Question.allCases) { q in
                         Text(q.rawValue).tag(q)
@@ -33,15 +33,29 @@ struct ContentView: View {
 
                 Spacer()
 
+                Stepper("Sub: \(subdivisions)", value: $subdivisions, in: 1...16)
+                    .frame(width: 80)
+                
+                Divider()
+                
                 Toggle("Wire", isOn: $showWire)
                     .toggleStyle(.switch)
             }
             .padding(.horizontal)
 
             // Preview
-            GeometryPreview(geometryBuilder: {
-                Q1()
-            }, showWire: showWire)
+            GeometryPreview(
+                geometryBuilder: {
+                    switch selectedQuestion {
+                    case .q1:
+                        Q1(subdivisions: subdivisions)
+                    case .q2:
+                        Q2(subdivisions: subdivisions)
+                    }
+                },
+                showWire: showWire
+            )
+            .id(subdivisions * (showWire ? 1 : 1000))
             .frame(minHeight: 300)
         }
     }
@@ -50,4 +64,3 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
-
