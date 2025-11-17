@@ -10,14 +10,17 @@ class Volume {
     var factor: Float
     var meshes: [Mesh]
     var mode: Mode
+    var cubeSize: Float
     
     var vertices: [SIMD3<Float>] = []
     var indices: [UInt16] = []
     
-    init(subdivisions: Int = 1, meshes: [Mesh] = [], mode: Mode = .normal) {
+    init(subdivisions: Int = 1, meshes: [Mesh] = [], mode: Mode = .normal, cubeSize: Float = 1.0) {
         self.subdivisions = subdivisions
         self.meshes = meshes
         self.mode = mode
+        
+        self.cubeSize = cubeSize
         
         self.factor = 1.0 / Float(subdivisions)
     }
@@ -107,7 +110,7 @@ class Volume {
         ]
         
         let baseIndex = UInt16(vertices.count)
-        let transformed = cubeVertices.map { center + $0 * size }
+        let transformed = cubeVertices.map { center + $0 * size * cubeSize}
         vertices.append(contentsOf: transformed)
 
         indices.append(contentsOf: cubeIndices.map { $0 + baseIndex })
