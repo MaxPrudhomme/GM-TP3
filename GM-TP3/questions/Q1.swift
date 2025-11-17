@@ -9,11 +9,11 @@ import simd
 import SwiftUI
 import SceneKit
 
-func Q1(subdivisions: Int) -> SCNNode {
+func Q1(subdivisions: Int, cubeSize: Float) -> SCNNode {
     let sphere = Sphere(radius: 1)
     sphere.center()
     
-    let volume = Volume(subdivisions: subdivisions, meshes: [sphere])
+    let volume = Volume(subdivisions: subdivisions, meshes: [sphere], cubeSize: cubeSize)
     
     volume.render()
     

@@ -21,6 +21,7 @@ struct ContentView: View {
     @State private var selectedQuestion: Question = .q4
     @State private var showWire: Bool = true
     @State private var subdivisions: Int = 8
+    @State private var cubeSize: Float = 1.0
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -35,8 +36,15 @@ struct ContentView: View {
 
                 Spacer()
 
-                Stepper("Sub: \(subdivisions)", value: $subdivisions, in: 1...16)
-                    .frame(width: 80)
+                Stepper(value: $cubeSize, in: 0.1...1.0, step: 0.1) {
+                    Text("Size: \(String(format: "%.1f", cubeSize))")
+                }
+                .frame(minWidth: 130)
+
+                Stepper(value: $subdivisions, in: 1...16) {
+                    Text("Sub: \(subdivisions)")
+                }
+                .frame(minWidth: 130)
                 
                 Divider()
                 
@@ -50,18 +58,18 @@ struct ContentView: View {
                 geometryBuilder: {
                     switch selectedQuestion {
                     case .q1:
-                        Q1(subdivisions: subdivisions)
+                        Q1(subdivisions: subdivisions, cubeSize: cubeSize)
                     case .q2:
-                        Q2(subdivisions: subdivisions)
+                        Q2(subdivisions: subdivisions, cubeSize: cubeSize)
                     case .q3:
-                        Q3(subdivisions: subdivisions)
+                        Q3(subdivisions: subdivisions, cubeSize: cubeSize)
                     case .q4:
-                        Q4(subdivisions: subdivisions)
+                        Q4(subdivisions: subdivisions, cubeSize: cubeSize)
                     }
                 },
                 showWire: showWire
             )
-            .id(subdivisions * (showWire ? 1 : 1000))
+            .id("\(selectedQuestion.rawValue)-\(subdivisions)-\(cubeSize)-\(showWire)")
             .frame(minHeight: 300)
         }
     }
