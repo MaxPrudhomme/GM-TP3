@@ -10,6 +10,9 @@ import SwiftUI
 import SceneKit
 
 func Q1() -> SCNNode {
-    let mesh = Mesh()
-    return mesh.makeNode()
-}
+    let cube = Cube(size: 1.0)
+
+    cube.center()
+    cube.normalize()
+    
+    return cube.makeNode()}

@@ -28,7 +28,9 @@ class Mesh {
         let vsrc = SCNGeometrySource(
             vertices: vertices.map { SCNVector3($0.x, $0.y, $0.z) }
         )
-        let nrm = normals.isEmpty ? Array(repeating: SIMD3<Float>(0, 0, 1), count: vertices.count) : normals
+        let nrm = normals.isEmpty
+            ? Array(repeating: SIMD3<Float>(0, 0, 1), count: vertices.count)
+            : normals
         let nsrc = SCNGeometrySource(
             normals: nrm.map { SCNVector3($0.x, $0.y, $0.z) }
         )
@@ -44,40 +46,36 @@ class Mesh {
             bytesPerIndex: MemoryLayout<UInt16>.size
         )
 
-        // black wire
+        // constant-shaded fill
+        let solid = SCNGeometry(sources: [vsrc, nsrc], elements: [elem])
+        let fillMat = SCNMaterial()
+        fillMat.lightingModel = .constant
+        #if os(macOS)
+        fillMat.diffuse.contents = NSColor.white
+        #endif
+        fillMat.isDoubleSided = true  // fixes inside-out appearance
+        solid.materials = [fillMat]
+
+        // optional wire overlay
         let wire = SCNGeometry(sources: [vsrc, nsrc], elements: [elem])
         let wireMat = SCNMaterial()
         wireMat.fillMode = .lines
-        wireMat.lightingModel = .lambert
+        wireMat.lightingModel = .constant
         #if os(macOS)
         wireMat.diffuse.contents = NSColor.black
         #else
         wireMat.diffuse.contents = UIColor.black
         #endif
-        wireMat.isDoubleSided = false
+        wireMat.isDoubleSided = true
         wire.materials = [wireMat]
 
-        // white fill
-        let base = wire.copy() as! SCNGeometry
-        let fillMat = SCNMaterial()
-        fillMat.lightingModel = .lambert
-        #if os(macOS)
-        fillMat.diffuse.contents = NSColor.white
-        #else
-        fillMat.diffuse.contents = UIColor.white
-        #endif
-        fillMat.isDoubleSided = false
-        base.materials = [fillMat]
-
         let parent = SCNNode()
-        let fillNode = SCNNode(geometry: base)
-        fillNode.scale = SCNVector3(0.997, 0.997, 0.997)
-        parent.addChildNode(fillNode)
-        
+        parent.addChildNode(SCNNode(geometry: solid))
+
         if Mesh.renderWire {
             parent.addChildNode(SCNNode(geometry: wire))
         }
-        
+
         return parent
     }
     
