@@ -10,9 +10,15 @@ import SwiftUI
 import SceneKit
 
 func Q1() -> SCNNode {
-    let cube = Cube(size: 1.0)
-
+    let cube = Cube(size: 1)
     cube.center()
     cube.normalize()
+    let volume = Volume(subdivisions: 1, meshes: [cube])
     
-    return cube.makeNode()}
+    volume.render()
+    
+    let mesh = Mesh(vertices: volume.vertices, indices: volume.indices)
+    mesh.makeNormals()
+    
+    return mesh.makeNode()
+}

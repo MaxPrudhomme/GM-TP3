@@ -20,10 +20,15 @@ import simd
 class Mesh {
     static var renderWire: Bool = true
 
-    var vertices: [SIMD3<Float>] = []
-    var indices: [UInt16] = []
+    var vertices: [SIMD3<Float>]
+    var indices: [UInt16]
     var normals: [SIMD3<Float>] = []
 
+    init(vertices: [SIMD3<Float>] = [], indices: [UInt16] = []) {
+        self.vertices = vertices
+        self.indices = indices
+    }
+    
     func makeNode() -> SCNNode {
         let vsrc = SCNGeometrySource(
             vertices: vertices.map { SCNVector3($0.x, $0.y, $0.z) }
@@ -205,6 +210,27 @@ class Mesh {
         }
         
         try content.write(toFile: path, atomically: true, encoding: .utf8)
+    }
+    
+    func intersects(voxel: Voxel) -> Bool {
+        guard !vertices.isEmpty else { return false }
+        var meshMin = vertices[0]
+        var meshMax = vertices[0]
+        for v in vertices {
+            meshMin = simd_min(meshMin, v)
+            meshMax = simd_max(meshMax, v)
+        }
+
+        let half = SIMD3<Float>(repeating: voxel.size * 0.5)
+        let vMin = voxel.center - half
+        let vMax = voxel.center + half
+
+        let overlap =
+            meshMin.x <= vMax.x && meshMax.x >= vMin.x &&
+            meshMin.y <= vMax.y && meshMax.y >= vMin.y &&
+            meshMin.z <= vMax.z && meshMax.z >= vMin.z
+            
+        return overlap
     }
 }
 
