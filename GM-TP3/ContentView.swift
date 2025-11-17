@@ -16,7 +16,7 @@ enum Question: String, CaseIterable, Identifiable {
 }
 
 struct ContentView: View {
-    @State private var selectedQuestion: Question = .q1
+    @State private var selectedQuestion: Question = .q2
     @State private var showWire: Bool = true
     @State private var subdivisions: Int = 8
 
