@@ -9,13 +9,15 @@ class Volume {
     var subdivisions: Int
     var factor: Float
     var meshes: [Mesh]
+    var mode: Mode
     
     var vertices: [SIMD3<Float>] = []
     var indices: [UInt16] = []
     
-    init(subdivisions: Int = 1, meshes: [Mesh] = []) {
+    init(subdivisions: Int = 1, meshes: [Mesh] = [], mode: Mode = .normal) {
         self.subdivisions = subdivisions
         self.meshes = meshes
+        self.mode = mode
         
         self.factor = 1.0 / Float(subdivisions)
     }
@@ -33,11 +35,9 @@ class Volume {
                         (Float(z) + 0.5) * factor
                     )
                     
-                    for mesh in meshes {
-                        if mesh.intersects(voxel: Voxel(center: center, size: factor)) {
-                            addCube(at: center, size: factor)
-                            break
-                        }
+                    switch mode {
+                    case .normal: mode_normal(center: center)
+                    case .intersect: mode_intersect(center: center)
                     }
                 }
             }
@@ -58,6 +58,30 @@ class Volume {
         let scale: Float = 1.0 / maxCoord
         for i in 0..<vertices.count {
             vertices[i] *= scale
+        }
+    }
+    
+    func mode_normal(center: SIMD3<Float>) {
+        for mesh in meshes {
+            if mesh.intersects(voxel: Voxel(center: center, size: factor)) {
+                addCube(at: center, size: factor)
+                break
+            }
+        }
+    }
+    
+    func mode_intersect(center: SIMD3<Float>) {
+        var allIntersect = true
+        
+        for mesh in meshes {
+            if !mesh.intersects(voxel: Voxel(center: center, size: factor)) {
+                allIntersect = false
+                break
+            }
+        }
+
+        if allIntersect {
+            addCube(at: center, size: factor)
         }
     }
     
@@ -93,4 +117,9 @@ class Volume {
 struct Voxel {
     let center: SIMD3<Float>
     let size: Float
+}
+
+enum Mode {
+    case normal
+    case intersect
 }

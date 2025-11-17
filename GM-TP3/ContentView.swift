@@ -12,11 +12,12 @@ import Combine
 enum Question: String, CaseIterable, Identifiable {
     case q1 = "Q1"
     case q2 = "Q2"
+    case q3 = "Q3"
     var id: String { rawValue }
 }
 
 struct ContentView: View {
-    @State private var selectedQuestion: Question = .q2
+    @State private var selectedQuestion: Question = .q3
     @State private var showWire: Bool = true
     @State private var subdivisions: Int = 8
 
@@ -51,6 +52,8 @@ struct ContentView: View {
                         Q1(subdivisions: subdivisions)
                     case .q2:
                         Q2(subdivisions: subdivisions)
+                    case .q3:
+                        Q3(subdivisions: subdivisions)
                     }
                 },
                 showWire: showWire
